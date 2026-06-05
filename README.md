@@ -214,7 +214,7 @@ You can configure your computer to run the pipeline automatically (e.g., every d
    * **Action**: Choose **Start a program**.
 4. In the **Program/script** field, click **Browse** and select [run_pipeline.bat](run_pipeline.bat).
 5. In the **Start in (optional)** field, enter the absolute path to your project folder:
-   `d:\Divyakumar\Data Scraping project\Price Monitoring System`
+   `C:\path\to\your\Price-Monitoring-System`
 6. Click **Finish**. 
 
 Now, Windows will automatically trigger the scraper, clean the database, insert the new records, and refresh the reporting datasets on your schedule!
