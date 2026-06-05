@@ -1,0 +1,31 @@
+# === PYTHON & PIPELINE GITIGNORE ===
+
+# Python Bytecode (Generated runtime files)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local Virtual Environments
+venv/
+.venv/
+ENV/
+env/
+
+# Environment Configuration (Contains database password - NEVER COMMIT!)
+.env
+.env.bak
+.env.local
+
+# Local Execution Logs
+logs/
+*.log
+
+# System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Project temp files
+.idea/
+.vscode/
+*.bak

@@ -1,0 +1,36 @@
+==================================================
+       BOOKS.TOSCRAPE.COM - DATA ANALYSIS
+==================================================
+Data Source : CSV Snapshot Backup (data/books.csv)
+Total books in dataset: 1000
+
+--- Price Statistics ---
+Average price: 35.07
+Highest price: 59.99
+Lowest price:  10.0
+
+Most expensive: The Perfect Play (Play by Play #1) (59.99)
+Cheapest:       An Abundance of Katherines (10.0)
+
+--- Rating Distribution ---
+Stars | Count
+--------------------
+  1   |  226  **********************
+  2   |  196  *******************
+  3   |  203  ********************
+  4   |  179  *****************
+  5   |  196  *******************
+
+--- Full Price Summary (.describe()) ---
+count    1000.00000
+mean       35.07035
+std        14.44669
+min        10.00000
+25%        22.10750
+50%        35.98000
+75%        47.45750
+max        59.99000
+Name: Price, dtype: float64
+
+==================================================
+Analysis complete.

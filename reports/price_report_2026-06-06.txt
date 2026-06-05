@@ -1,0 +1,33 @@
+=================================================================
+         PRICE CHANGE DETECTOR REPORT (Simulated)
+=================================================================
+Comparing date: 2026-06-05  -->  2026-06-06
+Data Source:    CSV Backup Log (Fallback)
+Total books checked: 1000
+Total price changes found: 3
+=================================================================
+
+[DECREASE] Price Drops (Good Deals):
+-----------------------------------------------------------------
+* A Light in the Attic
+  Old Price: £51.77  |  New Price: £45.99  |  Change: £-5.78 (-11.16%)
+  Link: https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html
+
+* Starving Hearts (Triangular Trade Trilogy, #1)
+  Old Price: £13.99  |  New Price: £1.99  |  Change: £-12.00 (-85.78%)
+  Link: https://books.toscrape.com/catalogue/starving-hearts-triangular-trade-trilogy-1_990/index.html
+
+[INCREASE] Price Hikes (More Expensive):
+-----------------------------------------------------------------
+* Tipping the Velvet
+  Old Price: £53.74  |  New Price: £56.24  |  Change: +£2.50 (+4.65%)
+  Link: https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html
+
+=================================================================
+                       SUMMARY
+=================================================================
+  Checked Books   : 1000
+  Price Drops     : 2
+  Price Hikes     : 1
+  Total Changes   : 3
+=================================================================

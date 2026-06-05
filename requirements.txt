@@ -1,0 +1,24 @@
+# ============================================================
+# requirements.txt - External Python Dependencies
+# ============================================================
+
+# HTTP client library used to download HTML pages from the target site.
+requests
+
+# HTML parser library used by BeautifulSoup to navigate the webpage structure.
+beautifulsoup4
+
+# Tabular data manipulation library used for cleaning and exporting data.
+pandas
+
+# PostgreSQL database adapter used by Python to execute SQL commands.
+psycopg2-binary
+
+# Configuration manager used to load database credentials from the .env file.
+python-dotenv
+
+# Web application framework used to build the interactive dashboard.
+streamlit
+
+# Interactive visualization library used to render responsive charts.
+plotly
