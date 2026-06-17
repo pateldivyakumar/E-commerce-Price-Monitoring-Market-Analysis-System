@@ -7,6 +7,9 @@
 
 title Price Monitoring ETL Pipeline
 
+:: Ensure execution from project root
+cd %~dp0..
+
 :: Create logs directory if it doesn't exist
 if not exist logs mkdir logs
 
@@ -19,7 +22,7 @@ echo ------------------------------------------------------------
 
 :: 1. Run the Scraper (Extracts data, saves CSVs, and updates PostgreSQL)
 echo [1/3] Extracting and Loading data to CSV and PostgreSQL...
-python scraper.py >> logs\pipeline.log 2>&1
+python src\scraper.py >> logs\pipeline.log 2>&1
 if %errorlevel% neq 0 (
     echo [ERROR] Scraper failed. Check logs/pipeline.log for details.
     echo Status: FAILED (Scraper Error) >> logs\pipeline.log
@@ -29,7 +32,7 @@ echo [SUCCESS] Scraper executed. Data saved to PostgreSQL and CSV backups.
 
 :: 2. Run Data Analysis
 echo [2/3] Generating catalog descriptive statistics...
-python analyze.py >> logs\pipeline.log 2>&1
+python src\analyze.py >> logs\pipeline.log 2>&1
 if %errorlevel% neq 0 (
     echo [ERROR] Analysis failed. Check logs/pipeline.log for details.
     echo Status: FAILED (Analysis Error) >> logs\pipeline.log
@@ -39,7 +42,7 @@ echo [SUCCESS] Statistics generated. Report saved in reports/analysis_report.txt
 
 :: 3. Run Price Change Detection
 echo [3/3] Scanning for price changes...
-python compare.py >> logs\pipeline.log 2>&1
+python src\compare.py >> logs\pipeline.log 2>&1
 if %errorlevel% neq 0 (
     echo [ERROR] Price comparison failed. Check logs/pipeline.log for details.
     echo Status: FAILED (Comparison Error) >> logs\pipeline.log

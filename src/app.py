@@ -217,11 +217,11 @@ if df_snapshot is None or df_history is None:
     with tab_init:
         st.markdown("### No Data Detected")
         st.markdown("To start, run Python in your project folder:")
-        st.code("python scraper.py")
+        st.code("python src/scraper.py")
         if st.button("Attempt Scraper Run (Local Only)"):
             with st.spinner("Scraping books.toscrape.com (this takes a couple of minutes)..."):
                 try:
-                    result = subprocess.run(["python", "scraper.py"], capture_output=True, text=True)
+                    result = subprocess.run(["python", "src/scraper.py"], capture_output=True, text=True)
                     st.text_area("Pipeline Log Output:", result.stdout, height=300)
                     st.success("Scraper executed successfully! Reloading...")
                     st.rerun()
@@ -699,7 +699,7 @@ with tab_system:
     with col_sys2:
         st.markdown("#### ⚡ ETL Pipeline Runner")
         st.markdown("""
-        Clicking the button below executes the scraping pipeline (`python scraper.py`) locally.
+        Clicking the button below executes the scraping pipeline (`python src/scraper.py`) locally.
         This will download the fresh HTML files, clean data types, update the Star Schema tables,
         and generate a new date-partitioned backup CSV.
         
@@ -712,8 +712,8 @@ with tab_system:
             
             with st.spinner("Executing ETL Pipeline (Scraping books.toscrape.com & updating PostgreSQL)..."):
                 try:
-                    # Execute python scraper.py securely without shell=True
-                    process = subprocess.run(["python", "scraper.py"], capture_output=True, text=True)
+                    # Execute python src/scraper.py securely without shell=True
+                    process = subprocess.run(["python", "src/scraper.py"], capture_output=True, text=True)
                     st.success("Pipeline executed successfully!")
                     st.text_area("Execution Console Output:", process.stdout, height=250)
                     
