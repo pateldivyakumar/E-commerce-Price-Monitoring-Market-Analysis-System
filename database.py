@@ -8,34 +8,26 @@
 # --- IMPORTS ---
 import os
 import psycopg2
+from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from dotenv import load_dotenv
+from psycopg2.extras import execute_batch
+import utils
+
+logger = utils.setup_logging()
 
 # ============================================================
 # FUNCTION: save_to_postgres
 # ============================================================
 def save_to_postgres(df):
-    load_dotenv()
+    db_name = utils.get_db_config()
 
-    db_host = os.getenv("DB_HOST", "localhost")
-    db_port = os.getenv("DB_PORT", "5432")
-    db_user = os.getenv("DB_USER", "postgres")
-    db_password = os.getenv("DB_PASSWORD", "")
-    db_name = os.getenv("DB_NAME", "price_monitor")
-
-    print("\n" + "=" * 50)
-    print("      CONNECTING TO POSTGRESQL DATABASE")
-    print("=" * 50)
+    logger.info("=" * 50)
+    logger.info("      CONNECTING TO POSTGRESQL DATABASE")
+    logger.info("=" * 50)
 
     # 1. Verify/Create the 'price_monitor' database
     try:
-        conn_default = psycopg2.connect(
-            host=db_host,
-            port=db_port,
-            user=db_user,
-            password=db_password,
-            database="postgres"
-        )
+        conn_default = utils.get_db_connection(database="postgres")
         conn_default.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cursor_default = conn_default.cursor()
 
@@ -43,29 +35,25 @@ def save_to_postgres(df):
         db_exists = cursor_default.fetchone()
 
         if not db_exists:
-            print(f"Database '{db_name}' not found. Creating database '{db_name}'...")
-            cursor_default.execute(f"CREATE DATABASE {db_name};")
-            print(f"Database '{db_name}' created successfully.")
+            logger.info(f"Database '{db_name}' not found. Creating database '{db_name}'...")
+            # Use psycopg2.sql to safely construct identifier to prevent SQL injection
+            create_db_query = sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name))
+            cursor_default.execute(create_db_query)
+            logger.info(f"Database '{db_name}' created successfully.")
         else:
-            print(f"Database '{db_name}' verified (already exists).")
+            logger.info(f"Database '{db_name}' verified (already exists).")
 
         cursor_default.close()
         conn_default.close()
 
     except Exception as e:
-        print(f"ERROR: Could not verify or create database: {e}")
-        print("Please check that PostgreSQL is running and your credentials in .env are correct.")
+        logger.error(f"Could not verify or create database: {e}")
+        logger.error("Please check that PostgreSQL is running and your credentials in .env are correct.")
         return
 
     # 2. Connect to 'price_monitor' database and verify the Star Schema tables
     try:
-        conn = psycopg2.connect(
-            host=db_host,
-            port=db_port,
-            user=db_user,
-            password=db_password,
-            database=db_name
-        )
+        conn = utils.get_db_connection()
         cursor = conn.cursor()
 
         # A. Dimension Table: books_catalog (Unique Book Metadata)
@@ -97,7 +85,7 @@ def save_to_postgres(df):
         """
         cursor.execute(create_history_table)
         conn.commit()
-        print("Star Schema tables (books_catalog, price_history) verified/created.")
+        logger.info("Star Schema tables (books_catalog, price_history) verified/created.")
 
         # 3. UPSERT unique metadata into books_catalog
         # If the UPC already exists, we update the title, category, and URL.
@@ -110,17 +98,14 @@ def save_to_postgres(df):
             product_url = EXCLUDED.product_url;
         """
 
-        print(f"Syncing unique book metadata into 'books_catalog'...")
-        for index, row in df.iterrows():
-            cursor.execute(
-                upsert_catalog_query,
-                (row["UPC"], row["Title"], row["Category"], row["URL"])
-            )
+        logger.info("Syncing unique book metadata into 'books_catalog' (bulk insert)...")
+        catalog_data = [(row["UPC"], row["Title"], row["Category"], row["URL"]) for _, row in df.iterrows()]
+        execute_batch(cursor, upsert_catalog_query, catalog_data)
         conn.commit()
 
         # 4. Clean existing same-day records in price_history
         today_date = df["Date_Collected"].iloc[0]
-        print(f"Cleaning existing history records for date: {today_date}...")
+        logger.info(f"Cleaning existing history records for date: {today_date}...")
         cursor.execute("DELETE FROM price_history WHERE date_collected = %s;", (today_date,))
 
         # 5. Insert fresh run into price_history
@@ -129,25 +114,26 @@ def save_to_postgres(df):
         VALUES (%s, %s, %s, %s, %s);
         """
 
-        print(f"Inserting pricing logs into 'price_history'...")
-        for index, row in df.iterrows():
-            cursor.execute(
-                insert_history_query,
-                (
-                    row["UPC"],
-                    row["Price"],
-                    str(row["Rating"]),
-                    int(row["Stock_Quantity"]),
-                    row["Date_Collected"]
-                )
+        logger.info("Inserting pricing logs into 'price_history' (bulk insert)...")
+        history_data = [
+            (
+                row["UPC"],
+                row["Price"],
+                str(row["Rating"]),
+                int(row["Stock_Quantity"]),
+                row["Date_Collected"]
             )
+            for _, row in df.iterrows()
+        ]
+        execute_batch(cursor, insert_history_query, history_data)
 
         conn.commit()
-        print("Star Schema sync complete! All data saved successfully.")
+        logger.info("Star Schema sync complete! All data saved successfully.")
 
         cursor.close()
         conn.close()
 
     except Exception as e:
-        print(f"DATABASE ERROR: {e}")
-        print("Operations failed. The database transaction has been rolled back.")
+        logger.error(f"DATABASE ERROR: {e}")
+        logger.error("Operations failed. The database transaction has been rolled back.")
+

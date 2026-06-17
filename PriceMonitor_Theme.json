@@ -1,0 +1,91 @@
+{
+    "name": "PriceMonitor_Corporate_Dark",
+    "dataColors": [
+        "#64FFDA", "#38BDF8", "#F59E0B", "#EF4444",
+        "#22C55E", "#A78BFA", "#F97316", "#06B6D4",
+        "#E879F9", "#84CC16"
+    ],
+    "background": "#0A192F",
+    "foreground": "#F8FAFC",
+    "tableAccent": "#64FFDA",
+    "good": "#22C55E",
+    "neutral": "#F59E0B",
+    "bad": "#EF4444",
+    "maximum": "#64FFDA",
+    "center": "#F59E0B",
+    "minimum": "#EF4444",
+    "textClasses": {
+        "callout": {
+            "fontSize": 28,
+            "fontFace": "Segoe UI",
+            "color": "#64FFDA"
+        },
+        "title": {
+            "fontSize": 18,
+            "fontFace": "Segoe UI",
+            "color": "#F8FAFC"
+        },
+        "header": {
+            "fontSize": 12,
+            "fontFace": "Segoe UI",
+            "color": "#94A3B8"
+        },
+        "label": {
+            "fontSize": 10,
+            "fontFace": "Segoe UI",
+            "color": "#94A3B8"
+        }
+    },
+    "visualStyles": {
+        "*": {
+            "*": {
+                "background": [{
+                    "color": {"solid": {"color": "#1E293B"}},
+                    "transparency": 0
+                }],
+                "border": [{
+                    "color": {"solid": {"color": "#334155"}},
+                    "radius": 8
+                }],
+                "title": [{
+                    "show": true,
+                    "fontColor": {"solid": {"color": "#94A3B8"}},
+                    "fontSize": 10,
+                    "fontFamily": "Segoe UI"
+                }],
+                "filterCard": [{
+                    "backgroundColor": {"solid": {"color": "#1E293B"}},
+                    "foregroundColor": {"solid": {"color": "#F8FAFC"}}
+                }]
+            }
+        },
+        "page": {
+            "*": {
+                "background": [{
+                    "color": {"solid": {"color": "#0A192F"}},
+                    "transparency": 0
+                }]
+            }
+        },
+        "card": {
+            "*": {
+                "background": [{
+                    "color": {"solid": {"color": "#1E293B"}},
+                    "transparency": 0
+                }]
+            }
+        },
+        "slicer": {
+            "*": {
+                "background": [{
+                    "color": {"solid": {"color": "#1E293B"}},
+                    "transparency": 0
+                }],
+                "items": [{
+                    "fontColor": {"solid": {"color": "#F8FAFC"}},
+                    "background": {"solid": {"color": "#0A192F"}}
+                }]
+            }
+        }
+    }
+}
