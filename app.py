@@ -16,6 +16,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from dotenv import load_dotenv
 import subprocess
 import datetime
+import utils
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
@@ -94,22 +95,6 @@ st.markdown("""
 # ============================================================
 # DATA CONNECTION LAYER (DUAL-MODE)
 # ============================================================
-def get_db_connection():
-    """Attempts to connect to PostgreSQL using .env parameters."""
-    load_dotenv()
-    db_host = os.getenv("DB_HOST", "localhost")
-    db_port = os.getenv("DB_PORT", "5432")
-    db_user = os.getenv("DB_USER", "postgres")
-    db_password = os.getenv("DB_PASSWORD", "")
-    db_name = os.getenv("DB_NAME", "price_monitor")
-    
-    return psycopg2.connect(
-        host=db_host,
-        port=db_port,
-        user=db_user,
-        password=db_password,
-        database=db_name
-    )
 
 @st.cache_data(ttl=3600)  # Cache results for 1 hour to ensure snappy performance
 def load_data():
@@ -123,7 +108,7 @@ def load_data():
     
     try:
         # Try database connection
-        conn = get_db_connection()
+        conn = utils.get_db_connection()
         
         # 1. Fetch Latest Snapshot (join tables, filtered by latest collected date)
         snapshot_query = """
@@ -231,7 +216,7 @@ if df_snapshot is None or df_history is None:
     tab_init = st.tabs(["⚙️ Run Pipeline Setup"])[0]
     with tab_init:
         st.markdown("### No Data Detected")
-        st.markdown("To start, run `run_pipeline.bat` in your project folder, or run Python:")
+        st.markdown("To start, run Python in your project folder:")
         st.code("python scraper.py")
         if st.button("Attempt Scraper Run (Local Only)"):
             with st.spinner("Scraping books.toscrape.com (this takes a couple of minutes)..."):
@@ -714,11 +699,11 @@ with tab_system:
     with col_sys2:
         st.markdown("#### ⚡ ETL Pipeline Runner")
         st.markdown("""
-        Clicking the button below executes the scraping pipeline (`run_pipeline.bat`) locally.
+        Clicking the button below executes the scraping pipeline (`python scraper.py`) locally.
         This will download the fresh HTML files, clean data types, update the Star Schema tables,
         and generate a new date-partitioned backup CSV.
         
-        *Note: Scrapes run synchronously and visit 1,000 product pages, taking about 3-5 minutes.*
+        *Note: Scrapes run concurrently using ThreadPoolExecutor, completing much faster than before.*
         """)
         
         if st.button("Run Scraper Pipeline Now"):
@@ -727,8 +712,8 @@ with tab_system:
             
             with st.spinner("Executing ETL Pipeline (Scraping books.toscrape.com & updating PostgreSQL)..."):
                 try:
-                    # Execute run_pipeline.bat
-                    process = subprocess.run(["run_pipeline.bat"], capture_output=True, text=True, shell=True)
+                    # Execute python scraper.py securely without shell=True
+                    process = subprocess.run(["python", "scraper.py"], capture_output=True, text=True)
                     st.success("Pipeline executed successfully!")
                     st.text_area("Execution Console Output:", process.stdout, height=250)
                     
