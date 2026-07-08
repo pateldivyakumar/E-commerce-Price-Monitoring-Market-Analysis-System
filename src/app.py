@@ -687,14 +687,22 @@ with tab_system:
         
         # Log viewer
         st.markdown("#### 📄 Latest Scraper Logs (`logs/pipeline.log`)")
-        log_path = "logs/pipeline.log"
-        if os.path.exists(log_path):
-            with open(log_path, "r", encoding="utf-8") as f:
-                logs = f.readlines()
-            # Show last 20 log lines
-            st.text_area("Pipeline Logs:", "".join(logs[-25:]), height=300)
+        
+        # Check multiple possible log file locations
+        log_candidates = ["logs/pipeline.log", "../logs/pipeline.log"]
+        log_content = None
+        for log_path in log_candidates:
+            if os.path.exists(log_path):
+                with open(log_path, "r", encoding="utf-8") as f:
+                    logs = f.readlines()
+                if logs:
+                    log_content = "".join(logs[-25:])
+                break
+        
+        if log_content:
+            st.text_area("Pipeline Logs:", log_content, height=300)
         else:
-            st.info("No log file found in `logs/pipeline.log`. Run the pipeline script to generate logs.")
+            st.info("No log file found. Click **'Run Scraper Pipeline Now'** to execute the pipeline and generate logs.")
             
     with col_sys2:
         st.markdown("#### ⚡ ETL Pipeline Runner")
@@ -708,20 +716,36 @@ with tab_system:
         
         if st.button("Run Scraper Pipeline Now"):
             log_placeholder = st.empty()
-            log_placeholder.info("Starting pipeline execution... Check terminal or log box for progress.")
+            log_placeholder.info("Starting pipeline execution... This may take 1-2 minutes.")
             
             with st.spinner("Executing ETL Pipeline (Scraping books.toscrape.com & updating PostgreSQL)..."):
                 try:
                     # Execute python src/scraper.py securely without shell=True
-                    process = subprocess.run(["python", "src/scraper.py"], capture_output=True, text=True)
-                    st.success("Pipeline executed successfully!")
-                    st.text_area("Execution Console Output:", process.stdout, height=250)
+                    process = subprocess.run(
+                        ["python", "src/scraper.py"], 
+                        capture_output=True, 
+                        text=True,
+                        timeout=300  # 5 minute timeout
+                    )
                     
-                    # Rerun to clear caching and load new data
-                    st.cache_data.clear()
-                    st.rerun()
+                    # Show output regardless of success/failure
+                    if process.stdout:
+                        st.text_area("📋 Pipeline Console Output:", process.stdout, height=250)
+                    if process.stderr:
+                        st.text_area("⚠️ Pipeline Warnings/Errors:", process.stderr, height=150)
+                    
+                    if process.returncode == 0:
+                        st.success("✅ Pipeline executed successfully! Click the button below to reload fresh data.")
+                        if st.button("🔄 Reload Dashboard with New Data"):
+                            st.cache_data.clear()
+                            st.rerun()
+                    else:
+                        st.error(f"Pipeline exited with error code: {process.returncode}. Check the output above for details.")
+                        
+                except subprocess.TimeoutExpired:
+                    st.error("Pipeline timed out after 5 minutes. The target site may be slow or unreachable.")
                 except Exception as e:
-                    st.error(f"Failed to execute batch pipeline: {e}")
+                    st.error(f"Failed to execute pipeline: {e}")
                     
         st.markdown("---")
         st.markdown("#### 💾 Download Datasets")
