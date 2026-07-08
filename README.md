@@ -128,8 +128,8 @@ The data extracted can be imported into Power BI to construct an interactive Bus
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/your-username/price-monitoring-system.git
-cd price-monitoring-system
+git clone https://github.com/pateldivyakumar/E-commerce-Price-Monitoring-Market-Analysis-System.git
+cd E-commerce-Price-Monitoring-Market-Analysis-System
 ```
 
 ### Step 2: Install Dependencies
