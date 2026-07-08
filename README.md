@@ -2,7 +2,7 @@
 
 🔗 **Live Dashboard**: [View on Streamlit Cloud](https://e-commerce-price-monitoring-market-analysis-system-jssfqmcurxr.streamlit.app)
 
-An automated, enterprise-ready **ETL (Extract, Transform, Load) Data Pipeline** that tracks, normalizes, stores, and analyzes competitor product prices and stock levels in real-time. 
+An automated, enterprise-ready **ETL (Extract, Transform, Load) Data Pipeline** that tracks, normalizes, stores, and analyzes competitor product prices and stock levels in real-time.
 
 Built with **Python**, **pandas**, and **PostgreSQL**, this system persists scraped data to both local CSV logs and a relational Star Schema database, enabling historical trend analysis, price change detection, and interactive business intelligence reporting via **Streamlit** and **Power BI**.
 
@@ -144,6 +144,7 @@ The system uses a normalized **Star Schema** with separate dimension and fact ta
 ## 📈 Project Results & Analytics
 
 Running the pipeline extracts **1,000 unique products** and yields these data metrics:
+
 * **Catalog Size**: 1,000 books across 50 pages.
 * **Pricing Range**: Average price of **£35.07**, ranging from **£10.00** (Cheapest: *An Abundance of Katherines*) to **£59.99** (Most Expensive: *The Perfect Play*).
 * **Inventory Volume**: Real-time stock counts tracked per book, allowing businesses to audit stock concentrations.
@@ -155,29 +156,35 @@ Running the pipeline extracts **1,000 unique products** and yields these data me
 
 The data extracted can be imported into Power BI to construct an interactive Business Intelligence report. Follow the instructions in **[docs/PowerBI_Guide.md](docs/PowerBI_Guide.md)** to load the data, write calculations, and configure the UI.
 
-![Power BI Dashboard ](screenshots/power_bi_dashboard_mockup.png)
+![Power BI Dashboard - Executive Overview](screenshots/Executive%20Overview.png)
+![Power BI Dashboard - Pricing Analysis](screenshots/Pricing%20Analysis.png)
 
 ---
 
 ## 🚀 Installation & Setup Guide
 
 ### Prerequisites
+
 1. **Python 3.7+** installed.
 2. **PostgreSQL** server running locally (optional — the app works without it using CSV fallback).
 
 ### Step 1: Clone the Repository
+
 ```bash
 git clone https://github.com/pateldivyakumar/E-commerce-Price-Monitoring-Market-Analysis-System.git
 cd E-commerce-Price-Monitoring-Market-Analysis-System
 ```
 
 ### Step 2: Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### Step 3: Configure Database Credentials
+
 Create a `.env` file in the root directory and add your PostgreSQL credentials:
+
 ```env
 DB_HOST=localhost
 DB_PORT=5432
@@ -191,32 +198,43 @@ DB_PASSWORD=YOUR_POSTGRES_PASSWORD
 ## 🏃 Execution Commands
 
 ### 1. Extract Data (Run the Scraper)
+
 Scrapes all 50 pages of the website, saves the data to `data/books.csv` and `data/history.csv`, and automatically syncs it to your PostgreSQL database:
+
 ```bash
 python src/scraper.py
 ```
 
 ### 2. View Statistics (Run the Analyzer)
+
 Computes descriptive statistics, identifies cheapest and most expensive books, and draws a star-rating distribution chart directly in the console:
+
 ```bash
 python src/analyze.py
 ```
 
 ### 3. Detect Price Changes (Run the Price Change Detector)
+
 Compares prices between the latest two runs in `history.csv` and flags price drops and hikes:
+
 ```bash
 python src/compare.py
 ```
 
 ### 4. Run the Full ETL Pipeline (Batch Script)
+
 To run the entire pipeline sequentially (Scrape → Load to DB → Analyze → Compare) and log status details automatically:
+
 ```bash
 scripts\run_pipeline.bat
 ```
+
 *Note: Python scripts log directly to `logs/pipeline.log`. The batch orchestrator logs its own status to `logs/batch_run.log`.*
 
 ### 5. Launch the Web Dashboard (Streamlit)
+
 Launches the interactive dashboard in your local browser:
+
 ```bash
 python -m streamlit run src/app.py
 ```
@@ -227,16 +245,19 @@ python -m streamlit run src/app.py
 
 You can host this interactive dashboard for free on **Streamlit Community Cloud** so recruiters can view your work instantly without downloading code or setting up PostgreSQL!
 
-### How it works:
+### How it works
+
 Streamlit Cloud links directly to your public GitHub repository. Since cloud servers cannot access your local PostgreSQL database, `src/app.py` uses a **Dual-Mode Data Loader**:
+
 1. **Local Mode**: Queries the local PostgreSQL `price_monitor` database via the Star Schema.
 2. **Cloud Mode**: If the database is unreachable, it automatically catches the connection error and loads data from the date-partitioned CSV files inside your repository.
 
-### Setup Instructions:
+### Setup Instructions
+
 1. Push this project folder to your public **GitHub** repository.
 2. Go to [share.streamlit.io](https://share.streamlit.io) and log in with your GitHub account.
 3. Click **New app**, select your repository, set the branch to `main`, and type `src/app.py` as the main file path.
-4. Click **Deploy!** 
+4. Click **Deploy!**
 Once deployed, copy the link and paste it at the top of your repository description or your resume!
 
 ---
@@ -254,7 +275,7 @@ You can configure your computer to run the pipeline automatically (e.g., every d
 4. In the **Program/script** field, click **Browse** and select [scripts/run_pipeline.bat](scripts/run_pipeline.bat).
 5. In the **Start in (optional)** field, enter the absolute path to your project folder:
    `C:\path\to\your\E-commerce-Price-Monitoring-Market-Analysis-System`
-6. Click **Finish**. 
+6. Click **Finish**.
 
 Now, Windows will automatically trigger the scraper, clean the database, insert the new records, and refresh the reporting datasets on your schedule!
 
