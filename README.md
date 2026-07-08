@@ -1,6 +1,6 @@
 # E-Commerce Price Monitoring & Competitive Intelligence System
 
-🔗 **Live Dashboard**: [View on Streamlit Cloud](https://e-commerce-price-monitoring-market-analysis-system-jssfqmcunxr.streamlit.app)
+🔗 **Live Dashboard**: [View on Streamlit Cloud](https://e-commerce-price-monitoring-market-analysis-system-jssfqmcurxr.streamlit.app)
 
 An automated, enterprise-ready **ETL (Extract, Transform, Load) Data Pipeline** that tracks, normalizes, stores, and analyzes competitor product prices and stock levels in real-time. 
 
@@ -155,7 +155,7 @@ Running the pipeline extracts **1,000 unique products** and yields these data me
 
 The data extracted can be imported into Power BI to construct an interactive Business Intelligence report. Follow the instructions in **[docs/PowerBI_Guide.md](docs/PowerBI_Guide.md)** to load the data, write calculations, and configure the UI.
 
-![Power BI Dashboard Mockup](screenshots/power_bi_dashboard_mockup.png)
+![Power BI Dashboard ](screenshots/power_bi_dashboard_mockup.png)
 
 ---
 
